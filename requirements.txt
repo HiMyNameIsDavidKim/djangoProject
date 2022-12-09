@@ -46,3 +46,5 @@ djangorestframework
 torchvision
 matplotlib
 IPython
+dlib
+cv2

@@ -9,6 +9,6 @@ from moviee.movies.services import DcGan
 @api_view(['GET'])
 @parser_classes([JSONParser])
 def faces(request):
-    DcGan().hook()
+    DcGan().hook_dcgan()
     print(f'Enter Show Faces with {request}')
     return JsonResponse({'Response Test': 'SUCCESS'})
