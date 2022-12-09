@@ -241,7 +241,7 @@ class DcGan(object):
 
     def hook_mydlib(self):
         # 학습된 랜드마크 모델 데이터 경로
-        predictor_model = "/Users/davidkim/PycharmProjects/djangoProject/moviee/files/shape_predictor_68_face_landmarks.dat"
+        predictor_model = "../files/shape_predictor_68_face_landmarks.dat"
 
         # HOG 이용한 얼굴 감지 클래스 생성 - dlib
         face_detector = dlib.get_frontal_face_detector()
@@ -255,7 +255,7 @@ class DcGan(object):
         face_aligner = openface.AlignDlib(predictor_model)
 
         # 이미지 파일 경로로 부터 이미지(numpy.ndarry) 불러오기
-        image = cv2.imread('/Users/davidkim/PycharmProjects/djangoProject/moviee/files/Lenna.png')
+        image = cv2.imread('../files/Lenna.png')
 
         '''
          이미지에서 얼굴 찾기
@@ -314,7 +314,7 @@ class DcGan(object):
             '''
 
             # aligned_face_x.jpg 로 저장
-            cv2.imwrite(f"/Users/davidkim/PycharmProjects/djangoProject/moviee/data/aligned_face_{i}.jpg", alignedFace)
+            cv2.imwrite(f"../data/aligned_face_{i}.jpg", alignedFace)
 
 class Generator(nn.Module):
     def __init__(self, ngpu):
