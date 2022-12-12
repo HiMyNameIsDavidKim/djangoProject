@@ -35,7 +35,7 @@ Additionally, we use the learned features for novel tasks - demonstrating their 
 
 class DcGan(object):
     def __init__(self):
-        self.dataroot = '/Users/davidkim/PycharmProjects/djangoProject/moviee/data' # 사진은 넣어야 한다.
+        self.dataroot = '/Users/davidkim/PycharmProjects/djangoProject/moviee/img_set' # 사진은 넣어야 한다.
         self.workers = 2
         self.batch_size = 128
         self.image_size = 64
@@ -43,13 +43,19 @@ class DcGan(object):
         self.nz = 100
         self.ngf = 64
         self.ndf = 64
-        self.num_epochs = 1
+        self.num_epochs = 20
         self.lr = 0.0002
         self.beta1 = 0.5
         self.ngpu = 1
         self.dataloader = None
         self.netG = None
         self.netD = None
+
+    def flow_dcgan(self):
+        self.img_show()
+        self.print_NetG()
+        self.print_NetD()
+        self.train_dcgan()
 
     def img_show(self):
         dataroot = self.dataroot
@@ -93,7 +99,7 @@ class DcGan(object):
 
         netG = Generator(ngpu).to(device)
 
-        if (device.type == 'cuda') and (ngpu > 1):
+        if (device.type == 'mps') and (ngpu > 1):
             netG = nn.DataParallel(netG, list(range(ngpu)))
 
         netG.apply(self.weights_init)
@@ -107,19 +113,13 @@ class DcGan(object):
 
         netD = Discriminator(ngpu).to(device)
 
-        if (device.type == 'cuda') and (ngpu > 1):
+        if (device.type == 'mps') and (ngpu > 1):
             netD = nn.DataParallel(netD, list(range(ngpu)))
 
         netD.apply(self.weights_init)
 
         self.netD = netD
         print(netD)
-
-    def hook_dcgan(self):
-        self.img_show()
-        self.print_NetG()
-        self.print_NetD()
-        self.train_dcgan()
 
     def train_dcgan(self):
         nz = self.nz
@@ -352,7 +352,7 @@ dc_menu = ["Exit", #0
 ]
 dc_lambda = {
     "1": lambda x: x.img_show(),
-    "2": lambda x: x.hook_dcgan(),
+    "2": lambda x: x.flow_dcgan(),
     "3": lambda x: x.zoom_in(),
 }
 
