@@ -1,11 +1,16 @@
 import numpy as np
 import pandas as pd
-import sns
+from matplotlib import font_manager, rc
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import OrdinalEncoder
 from imblearn.under_sampling import RandomUnderSampler
 from sklearn.tree import DecisionTreeClassifier
+import seaborn as sns
+import matplotlib.pyplot as plt
+font_path = "/System/Library/Fonts/Supplemental/AppleGothic.ttf"
+font = font_manager.FontProperties(fname=font_path).get_name()
+rc('font', family=font)
 
 '''
 <class 'pandas.core.frame.DataFrame'>
@@ -76,7 +81,7 @@ class StrokeService:
     '''
     def interval(self):
         t = self.my_stroke
-        interval = ['나이','평균혈당','체질량지수']
+        interval = ['나이', '평균혈당', '체질량지수']
         print(f'--- 구간변수 타입 --- \n {t[interval].dtypes}')
         print(f'--- 결측값 있는 변수 --- \n {t[interval].isna().any()[lambda x: x]}')
         print(f'체질량 결측비율: {t["체질량지수"].isnull().mean():.2f}')
@@ -126,7 +131,7 @@ class StrokeService:
     def set_target(self):
         df = pd.read_csv('./save/stroke.csv')
         self.data = df.drop(['뇌졸중'], axis=1)
-        self.data = self.data.drop(['아이디'], axis=1)
+        self.data = self.data.drop(['Unnamed: 0'], axis=1)
         self.target = df['뇌졸중']
         print(f'--- data shape --- \n {self.data}')
         print(f'--- target shape --- \n {self.target}')
@@ -137,13 +142,12 @@ class StrokeService:
         undersample = RandomUnderSampler(sampling_strategy=0.333, random_state=2)
         data_under, target_under = undersample.fit_resample(data, target)
         print(target_under.value_counts(dropna=True))
-        X_train, X_test, y_train, y_test = train_test_split(data_under, target_under,
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(data_under, target_under,
                                                             test_size=0.5, random_state=42, stratify=target_under)
-        self.X_train, self.X_test, self.y_train, self.y_test = X_train, X_test, y_train, y_test
-        print("X_train shape:", X_train.shape)
-        print("X_test shape:", X_test.shape)
-        print("y_train shape:", y_train.shape)
-        print("y_test shape:", y_test.shape)
+        print("X_train shape:", self.X_train.shape)
+        print("X_test shape:", self.X_test.shape)
+        print("y_train shape:", self.y_train.shape)
+        print("y_test shape:", self.y_test.shape)
 
     def learning(self, flag):
         X_train = self.X_train
@@ -170,16 +174,21 @@ class StrokeService:
             grid_tree.fit(X_train, y_train)
             tree.fit(X_train, y_train)
             print("GridSerchCV max accuracy: {:.5f}".format(grid_tree.best_score_))
-            print("GridSerchCV best parameter: ",(grid_tree.best_params_))
+            print("GridSerchCV best parameter: ", (grid_tree.best_params_))
             best_clf = grid_tree.best_estimator_
             pred = best_clf.predict(X_test)
             print("Accuracy on test set: {:.5f}".format(accuracy_score(y_test, pred)))
-            print(f"Feature Importances: {best_clf.feature_importances_}") # 최적 모델의 변수 중요도
+            print(f"Feature Importances: {best_clf.feature_importances_}")  # 최적 모델의 변수 중요도
             feature_names = list(self.data.columns)
             dft = pd.DataFrame(np.round(best_clf.feature_importances_, 4),
                                index=feature_names, columns=['Feature_importances'])
             dft1 = dft.sort_values(by="Feature_importances", ascending=False)
             print(dft1)
+            ax = sns.barplot(y=dft1.index, x="Feature_importances", data=dft1)
+            for p in ax.patches:
+                ax.annotate("%.3f" % p.get_width(), (p.get_x() + p.get_width(), p.get_y() + 1),
+                            xytext=(5, 10), textcoords='offset points')
+            plt.show()
 
 
 def menu_show(ls):
@@ -222,7 +231,7 @@ stroke_menu = {
 
 
 if __name__ == '__main__':
-    stroke = StrokeService()
+    ss = StrokeService()
     while True:
         menu = menu_show(STROKE_MENUS)
         if menu == '0':
@@ -230,7 +239,7 @@ if __name__ == '__main__':
             break
         else:
             try:
-                stroke_menu[menu](stroke)
+                stroke_menu[menu](ss)
             except KeyError as e:
                 if 'some error message' in str(e):
                     print('Caught error message')
