@@ -1,43 +1,47 @@
 import pandas as pd
+from keras import Sequential
+from keras.layers import Dense
+from sklearn import datasets
+from sklearn.preprocessing import OneHotEncoder
 
 
 class Iris(object):
     def __init__(self):
-        self.iris = pd.read_csv('./data/Iris.csv')
+        self.iris = datasets.load_iris()
         self.my_iris = None
+        self._X = self.iris.data
+        self._Y = self.iris.target
 
-    def process(self):
-        self.spec()
+    def execute(self):
+        self.create_model()
 
     def spec(self):
-        print(" --- 1.Shape ---")
-        print(self.iris.shape)
-        print(" --- 2.Features ---")
-        print(self.iris.columns)
-        print(" --- 3.Info ---")
-        print(self.iris.info())
-        print(" --- 4.Case Top1 ---")
-        print(self.iris.head(1))
-        print(" --- 5.Case Bottom1 ---")
-        print(self.iris.tail(3))
-        print(" --- 6.Describe ---")
-        print(self.iris.describe())
-        print(" --- 7.Describe All ---")
-        print(self.iris.describe(include='all'))
+        print(f'{self.iris.feature_names}')
 
+    def create_model(self):
+        X = self._X
+        Y = self._Y
+        enc = OneHotEncoder()
+        Y_1hot = enc.fit_transform(Y.reshape(-1, 1)).toarray()
+        model = Sequential()
+        model.add(Dense(4, input_dim=4, activation='relu'))
+        model.add(Dense(3, activation='softmax'))
+        model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+        model.fit(X, Y_1hot, epochs=300, batch_size=10)
+        print('Model Training is completed.')
 
-def menu_show(ls):
-    [print(f"{i}.{j}") for i, j in enumerate(ls)]
-    return input("Choose menu : ")
+        file_name = './save/iris_model.h5'
+        model.save(file_name)
+        print(f'Model Saved on "{file_name}"')
 
 
 iris_menus = ["Exit", # 0
-                "Spec", # 1
+              "Spec", # 1
+              "Execute", # 2
 ]
-
 iris_lambda = {
     "1": lambda t: t.spec(),
-    "2": lambda t: print(" ** No Function ** "),
+    "2": lambda t: t.execute(),
     "3": lambda t: print(" ** No Function ** "),
     "4": lambda t: print(" ** No Function ** "),
     "5": lambda t: print(" ** No Function ** "),
@@ -51,7 +55,8 @@ iris_lambda = {
 if __name__ == '__main__':
     iris = Iris()
     while True:
-        menu = menu_show(iris_menus)
+        [print(f"{i}. {j}") for i, j in enumerate(iris_menus)]
+        menu = input('Choose menu : ')
         if menu == '0':
             print("Exit")
             break
