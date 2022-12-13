@@ -1,38 +1,23 @@
 import pandas as pd
 from keras import Sequential
 from keras.layers import Dense
+from keras.saving.save import load_model
 from sklearn import datasets
 from sklearn.preprocessing import OneHotEncoder
+import tensorflow as tf
 
 
-class Iris(object):
+class IrisService(object):
     def __init__(self):
-        self.iris = datasets.load_iris()
-        self.my_iris = None
-        self._X = self.iris.data
-        self._Y = self.iris.target
+        model = load_model('./save/iris_model.h5')
+        graph = tf.get_default_graph()
+        target_names = datasets.load_iris().target_names
 
     def execute(self):
-        self.create_model()
+        self.service_model()
 
-    def spec(self):
-        print(f'{self.iris.feature_names}')
-
-    def create_model(self):
-        X = self._X
-        Y = self._Y
-        enc = OneHotEncoder()
-        Y_1hot = enc.fit_transform(Y.reshape(-1, 1)).toarray()
-        model = Sequential()
-        model.add(Dense(4, input_dim=4, activation='relu'))
-        model.add(Dense(3, activation='softmax'))
-        model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-        model.fit(X, Y_1hot, epochs=300, batch_size=10)
-        print('Model Training is completed.')
-
-        file_name = './save/iris_model.h5'
-        model.save(file_name)
-        print(f'Model Saved on "{file_name}"')
+    def service_model(self):
+        parser = reqparse
 
 
 iris_menus = ["Exit", # 0
@@ -53,7 +38,7 @@ iris_lambda = {
 
 
 if __name__ == '__main__':
-    iris = Iris()
+    iris = IrisService()
     while True:
         [print(f"{i}. {j}") for i, j in enumerate(iris_menus)]
         menu = input('Choose menu : ')
