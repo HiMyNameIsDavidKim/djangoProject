@@ -6,5 +6,10 @@ from rest_framework.parsers import JSONParser
 @api_view(['POST'])
 @parser_classes([JSONParser])
 def login(request):
-    print(f'Enter Blog-Login with {request}')
+    user_info = request.data
+    email = user_info['email']
+    password = user_info['password']
+    print(f'Data from react {user_info}')
+    print(f'Email from react {email}')
+    print(f'Password from react {password}')
     return JsonResponse({'Response Test': 'SUCCESS'})
