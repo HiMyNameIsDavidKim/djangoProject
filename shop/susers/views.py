@@ -25,13 +25,14 @@ def iris(request):
     swc = tf.constant(float(iris_data['sepal_width_cm']))
     slc = tf.constant(float(iris_data['sepal_length_cm']))
     features = [pwc, plc, swc, slc]
-    irisservice = IrisService()
-    result = irisservice.service_model(features)
+    iris_service = IrisService()
+    result = iris_service.service_model(features)
+    resp = ''
     if result == 0:
-        resp = 'setosa / 부채붓꽃'
+        resp = 'setosa, 부채붓꽃'
     elif result == 1:
-        resp = 'versicolor / 버시칼라 '
+        resp = 'versicolor, 버시칼라'
     elif result == 2:
-        resp = 'virginica / 버지니카'
+        resp = 'virginica, 버지니카'
     print(f'species: {resp}')
     return JsonResponse({'result': resp})
