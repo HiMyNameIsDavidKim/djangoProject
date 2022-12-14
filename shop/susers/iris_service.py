@@ -5,19 +5,24 @@ from keras.saving.save import load_model
 from sklearn import datasets
 from sklearn.preprocessing import OneHotEncoder
 import tensorflow as tf
+import numpy as np
 
 
 class IrisService(object):
     def __init__(self):
-        model = load_model('./save/iris_model.h5')
-        graph = tf.get_default_graph()
+        global model, graph, target_names
+        model = load_model('/Users/davidkim/PycharmProjects/djangoProject/shop/susers/save/iris_model.h5')
+        # graph = tf.get_default_graph()
         target_names = datasets.load_iris().target_names
 
     def execute(self):
         self.service_model()
 
-    def service_model(self):
-        parser = reqparse
+    def service_model(self, features):
+        features = np.reshape(features, (1, 4))
+        Y_prob = model.predict(features, verbose=0)
+        predicted = Y_prob.argmax(axis=-1)
+        return predicted[0]
 
 
 iris_menus = ["Exit", # 0
