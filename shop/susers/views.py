@@ -1,9 +1,11 @@
+import json
 from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.decorators import api_view, parser_classes
 from rest_framework.parsers import JSONParser
 import tensorflow as tf
 
+from shop.susers.fashion_service import FashionService
 from shop.susers.iris_service import IrisService
 
 
@@ -25,14 +27,12 @@ def iris(request):
     swc = tf.constant(float(iris_data['sepal_width_cm']))
     slc = tf.constant(float(iris_data['sepal_length_cm']))
     features = [pwc, plc, swc, slc]
-    iris_service = IrisService()
-    result = iris_service.service_model(features)
-    resp = ''
-    if result == 0:
-        resp = 'setosa, 부채붓꽃'
-    elif result == 1:
-        resp = 'versicolor, 버시칼라'
-    elif result == 2:
-        resp = 'virginica, 버지니카'
-    print(f'species: {resp}')
+    resp = IrisService().service_model(features)
+    return JsonResponse({'result': resp})
+
+@api_view(["GET"])
+def fashion(request, id):
+    print(f"### GET  ###")
+    print(f"React ID is {request.GET['id']}")
+    resp = FashionService().service_model(int(request.GET['id']))
     return JsonResponse({'result': resp})

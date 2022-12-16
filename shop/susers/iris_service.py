@@ -22,7 +22,16 @@ class IrisService(object):
         features = np.reshape(features, (1, 4))
         Y_prob = model.predict(features, verbose=0)
         predicted = Y_prob.argmax(axis=-1)
-        return predicted[0]
+        result = predicted[0]
+        resp = ''
+        if result == 0:
+            resp = 'setosa, 부채붓꽃'
+        elif result == 1:
+            resp = 'versicolor, 버시칼라'
+        elif result == 2:
+            resp = 'virginica, 버지니카'
+        print(f'species: {resp}')
+        return resp
 
 
 iris_menus = ["Exit", # 0
