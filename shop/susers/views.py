@@ -30,9 +30,16 @@ def iris(request):
     resp = IrisService().service_model(features)
     return JsonResponse({'result': resp})
 
-@api_view(["GET"])
-def fashion(request, id):
-    print(f"### GET  ###")
-    print(f"React ID is {request.GET['id']}")
-    resp = FashionService().service_model(int(request.GET['id']))
+@api_view(["GET", "POST"])
+def fashion(request):
+    resp = ''
+    if request.method == "GET":
+        print(f"### GET ###")
+        print(f"React ID is {request.GET['id']}.")
+        resp = FashionService().service_model(int(request.GET['id']))
+    elif request.method == "POST":
+        print(f"### POST ###")
+        data = request.GET['id']
+        print(f'React ID is {data}.')
+        resp = FashionService().service_model(int(request.GET['id']))
     return JsonResponse({'result': resp})

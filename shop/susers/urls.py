@@ -3,5 +3,6 @@ from shop.susers import views
 
 urlpatterns = [
     url(r'iris', views.iris),
-    url(r'fashion/(?P<id>)$', views.fashion)
+    # url(r'fashion/(?P<id>)$', views.fashion),
+    url(r'fashion', views.fashion)
 ]
