@@ -29,23 +29,36 @@ class FashionModel(object):
         print(f"저장경로: {file_name}")
         model.save(file_name)
 
-menu = ["Exit", "create_model"]  # 1
-menu_lambda = {
-    "1": lambda x: x.create_model(),
+
+fashion_menus = ["Exit", # 0
+               "Create Model", # 1
+]
+fashion_lambda = {
+    "1": lambda t: t.create_model(),
+    "2": lambda t: print(" ** No Function ** "),
+    "3": lambda t: print(" ** No Function ** "),
+    "4": lambda t: print(" ** No Function ** "),
+    "5": lambda t: print(" ** No Function ** "),
+    "6": lambda t: print(" ** No Function ** "),
+    "7": lambda t: print(" ** No Function ** "),
+    "8": lambda t: print(" ** No Function ** "),
+    "9": lambda t: print(" ** No Function ** "),
 }
+
+
 if __name__ == '__main__':
-    model = FashionModel()
+    fashion = FashionModel()
     while True:
-        [print(f"{i}. {j}") for i, j in enumerate(menu)]
-        menu = input('메뉴선택: ')
+        [print(f"{i}. {j}") for i, j in enumerate(fashion_menus)]
+        menu = input('Choose menu : ')
         if menu == '0':
-            print("종료")
+            print("Exit")
             break
         else:
             try:
-                menu_lambda[menu](model)
+                fashion_lambda[menu](fashion)
             except KeyError as e:
                 if 'some error message' in str(e):
-                    print('Caught error message')
+                    print('Caught error message.')
                 else:
-                    print("Didn't catch error message")
+                    print("Didn't catch error message.")

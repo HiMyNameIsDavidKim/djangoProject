@@ -7,6 +7,7 @@ import tensorflow as tf
 
 from shop.susers.fashion_service import FashionService
 from shop.susers.iris_service import IrisService
+from shop.susers.number_service import NumberService
 
 
 @api_view(['POST'])
@@ -44,6 +45,20 @@ def fashion(request):
         id = json.loads(request.body)
         print(f'React ID is {id}.')
         resp = FashionService().service_model(int(id))
+    else:
+        print(f"### Error ###")
+        resp = 'Error'
+    return JsonResponse({'result': resp})
+
+@api_view(["GET"])
+@parser_classes([JSONParser])
+def number(request):
+    resp = ''
+    if request.method == "GET":
+        print(f"### GET ###")
+        id = request.GET['id']
+        print(f"React ID is {id}.")
+        resp = NumberService().service_model(int(id))
     else:
         print(f"### Error ###")
         resp = 'Error'
