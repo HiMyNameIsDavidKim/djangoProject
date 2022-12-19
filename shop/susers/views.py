@@ -31,15 +31,20 @@ def iris(request):
     return JsonResponse({'result': resp})
 
 @api_view(["GET", "POST"])
+@parser_classes([JSONParser])
 def fashion(request):
     resp = ''
     if request.method == "GET":
         print(f"### GET ###")
-        print(f"React ID is {request.GET['id']}.")
-        resp = FashionService().service_model(int(request.GET['id']))
+        id = request.GET['id']
+        print(f"React ID is {id}.")
+        resp = FashionService().service_model(int(id))
     elif request.method == "POST":
         print(f"### POST ###")
-        data = request.GET['id']
-        print(f'React ID is {data}.')
-        resp = FashionService().service_model(int(request.GET['id']))
+        id = json.loads(request.body)
+        print(f'React ID is {id}.')
+        resp = FashionService().service_model(int(id))
+    else:
+        print(f"### Error ###")
+        resp = 'Error'
     return JsonResponse({'result': resp})
