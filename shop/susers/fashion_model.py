@@ -7,6 +7,9 @@ from keras.layers import Dense
 
 class FashionModel(object):
 
+    def __init__(self):
+        pass
+
     def create_model(self):
         (train_images, train_labels), (test_images, test_labels) = keras.datasets.fashion_mnist.load_data()
         plt.figure()
