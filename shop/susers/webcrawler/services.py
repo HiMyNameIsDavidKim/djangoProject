@@ -5,14 +5,14 @@ import urllib
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
 
 
 class ScrapService(ScrapVO):
     def __init__(self):
         global driverpath, naver_url, savepath
-        driverpath = f'/Users/davidkim/chromedriver.exe'
         naver_url = f'https://movie.naver.com/movie/sdb/rank/rmovie.naver'
-        savepath = f'/Users/davidkim/PycharmProjects/djangoProject/shop/susers/webcrawler/save'
+        savepath = f'/Users/davidkim/PycharmProjects/djangoProject/shop/susers/webcrawler/save/result.csv'
 
     def musicChart(self, arg): # 기본 크롤링
         soup = BeautifulSoup(urlopen(arg.domain + arg.query_string), 'lxml')
@@ -34,8 +34,8 @@ class ScrapService(ScrapVO):
         arg.dict_to_dataframe()
         arg.dataframe_to_csv()
 
-    def naver_movie_review(self):
-        driver = webdriver.Chrome()
+    def naver_movie_review(self, rank):
+        driver = webdriver.Chrome(ChromeDriverManager().install())
         driver.get(naver_url)
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         all_divs = soup.find_all('div', attrs={'class', 'tit3'})
@@ -44,3 +44,9 @@ class ScrapService(ScrapVO):
             wr = csv.writer(f)
             wr.writerows(products)
         driver.close()
+        return products[0][rank]
+
+
+if __name__ == '__main__':
+    ss = ScrapService()
+    print(ss.naver_movie_review())
