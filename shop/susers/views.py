@@ -69,13 +69,5 @@ def number(request):
 @api_view(["GET"])
 @parser_classes([JSONParser])
 def crawler(request):
-    resp = ''
-    if request.method == "GET":
-        print(f"### GET ###")
-        id = request.GET['id']
-        print(f"React ID is {id}.")
-        resp = ScrapService().naver_movie_review(int(id)-1)
-    else:
-        print(f"### Error ###")
-        resp = 'Error'
+    resp = ScrapService().naver_movie_review()
     return JsonResponse({'result': resp})

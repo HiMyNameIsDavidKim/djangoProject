@@ -1,4 +1,5 @@
 import csv
+import pandas as pd
 
 from shop.susers.webcrawler.models import ScrapVO
 import urllib
@@ -34,17 +35,19 @@ class ScrapService(ScrapVO):
         arg.dict_to_dataframe()
         arg.dataframe_to_csv()
 
-    def naver_movie_review(self, rank):
-        driver = webdriver.Chrome(ChromeDriverManager().install())
+    def naver_movie_review(self):
+        driver = webdriver.Chrome('/Users/davidkim/chromedriver')
         driver.get(naver_url)
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         all_divs = soup.find_all('div', attrs={'class', 'tit3'})
         products = [[div.a.string for div in all_divs]]
-        with open(savepath, 'w', newline='', encoding='UTF-8') as f:
+        with open(savepath, 'w', newline='', encoding='utf-8') as f:
             wr = csv.writer(f)
             wr.writerows(products)
         driver.close()
-        return products[0][rank]
+        df = pd.read_csv(savepath)
+        resp = [{'rank': f"{i + 1}", 'title': f"{j}"} for i, j in enumerate(df)]
+        return resp
 
 
 if __name__ == '__main__':
