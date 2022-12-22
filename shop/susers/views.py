@@ -71,3 +71,4 @@ def number(request):
 def crawler(request):
     resp = ScrapService().naver_movie_review()
     return JsonResponse({'result': resp})
+
