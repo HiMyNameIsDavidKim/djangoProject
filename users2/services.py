@@ -16,7 +16,7 @@ class UserService(object):
 
     def execute(self):
         df = self.create_dummy_df()
-        # self.sql_insert(df)
+        self.sql_insert(df)
 
     def create_dummy_df(self):
         # name_set = string.ascii_letters
@@ -32,7 +32,7 @@ class UserService(object):
                     "탁", "온", "디", "항", "후", "려", "균", "묵", "송", "욱", "휴", "언", "령", "섬", "들", "견", "추", "걸", "삼",
                     "열", "웅", "분", "변", "양", "출", "타", "흥", "겸", "곤", "번", "식", "란", "더", "손", "술", "훔", "반", "빈",
                     "실", "직", "흠", "흔", "악", "람", "뜸", "권", "복", "심", "헌", "엽", "학", "개", "롱", "평", "늘", "늬", "랑",
-                    "얀", "향", "울", "련", "혜"]
+                    "얀", "향", "울", "련"]
 
         while len(username) != 100:
             rand_name = ''.join(random.sample(name_first, 1) + random.sample(name_set, 2))
