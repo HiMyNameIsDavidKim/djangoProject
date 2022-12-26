@@ -1,15 +1,14 @@
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+from tensorflow import keras
 from keras import Sequential
 from keras.layers import Dense
-from keras.saving.save import load_model
 from matplotlib import pyplot as plt
 from sklearn import datasets
 from sklearn.preprocessing import OneHotEncoder
 import os
 
-from tensorflow import keras
 
 
 class FashionService(object):
@@ -20,7 +19,7 @@ class FashionService(object):
 
     # self, i, predictions_array, true_label, img
     def service_model(self, i) -> '':
-        model = load_model(r"/Users/davidkim/PycharmProjects/djangoProject/shop/susers/save/fashion_model2.h5")
+        model = keras.models.load_model(r"/Users/davidkim/PycharmProjects/djangoProject/shop/susers/save/fashion_model2.h5")
         (train_images, train_labels), (test_images, test_labels) = keras.datasets.fashion_mnist.load_data()
         predictions = model.predict(test_images)
         predictions_array, true_label, img = predictions[i], test_labels[i], test_images[i]
@@ -55,7 +54,7 @@ fashion_menus = ["Exit", # 0
                 "Service", # 1
 ]
 fashion_lambda = {
-    "1": lambda t: t.service_model(),
+    "1": lambda t: t.service_model(3),
     "2": lambda t: print(" ** No Function ** "),
     "3": lambda t: print(" ** No Function ** "),
     "4": lambda t: print(" ** No Function ** "),

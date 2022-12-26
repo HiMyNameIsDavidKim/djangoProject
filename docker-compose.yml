@@ -8,22 +8,29 @@ services:
       - ~/docker/mysql/etc/mysql/conf.d:/etc/mysql/conf.d:ro
       - ~/docker/mysql/var/lib/mysql:/var/lib/mysql
       - ~/docker/mysql/var/log/mysql:/var/log/mysql
+      - /opt/mydb/mysql_data:/var/lib/mysql
+      - /tmp/mydb/mysqld:/var/run/mysqld
     environment:
       - MYSQL_DATABASE=mydb
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_ROOT_HOST=%
     command: [ '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci' ]
     ports:
-      - "3306:3306"
-  web:
+      - 3306:3306
+  backend:
     image: david_mydj:v1
     build: .
     container_name: david_mydj
-    command:
-      - python manage.py runserver 0:8000
+    stdin_open: true
+    tty: true
+    command: python manage.py runserver 0:8000
     ports:
       - "8000:8000"
     volumes:
       - .:/david_mydj
+      - /tmp/mydb/mysqld:/run/mysqld
     expose:
       - "8000"
+    restart: always
+    depends_on:
+      - database

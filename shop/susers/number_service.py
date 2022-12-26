@@ -1,16 +1,15 @@
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+from tensorflow import keras
 from keras import Sequential
 from keras.layers import Dense
-from keras.saving.save import load_model
 from matplotlib import pyplot as plt
 from sklearn import datasets
 from sklearn.preprocessing import OneHotEncoder
 import os
 import keras.datasets.mnist
 
-from tensorflow import keras
 
 
 class NumberService(object):
@@ -21,7 +20,7 @@ class NumberService(object):
     # self, i, predictions_array, true_label, img
     def service_model(self, i) -> '':
         # i = int(input('input test number : '))
-        model = load_model(r"/Users/davidkim/PycharmProjects/djangoProject/shop/susers/save/number_model.h5")
+        model = keras.models.load_model(r"/Users/davidkim/PycharmProjects/djangoProject/shop/susers/save/number_model.h5")
         (train_images, train_labels), (test_images, test_labels) = keras.datasets.mnist.load_data()
         predictions = model.predict(test_images)
         predictions_array, true_label, img = predictions[i], test_labels[i], test_images[i]

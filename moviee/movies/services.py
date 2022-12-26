@@ -236,8 +236,9 @@ class DcGan(object):
         plt.show()
 
     def zoom_in(self):
-        mydlib = Mydlib()
-        mydlib.zoom_in()
+        pass
+        # mydlib = Mydlib()
+        # mydlib.zoom_in()
 
 
 class Generator(nn.Module):
@@ -306,74 +307,74 @@ class Discriminator(nn.Module):
     def forward(self, input):
         return self.main(input)
 
-
-import sys
-import dlib
-import cv2
-import openface
-
-
-class Mydlib(object):
-    def __init__(self):
-        pass
-
-    def zoom_in(self):
-        predictor_model = "../files/shape_predictor_68_face_landmarks.dat"
-
-        face_detector = dlib.get_frontal_face_detector()
-        face_pose_predictor = dlib.shape_predictor(predictor_model)
-        face_aligner = openface.AlignDlib(predictor_model)
-
-        image = cv2.imread('../files/Lenna.png')
-
-        detected_faces = face_detector(image, 1)
-        for i, face_rect in enumerate(detected_faces):
-            print(
-                "- Face #{} found at Left: {} Top: {} Right: {} Bottom: {}".format(i, face_rect.left(), face_rect.top(),
-                                                                                   face_rect.right(),
-                                                                                   face_rect.bottom()))
-
-            pose_landmarks = face_pose_predictor(image, face_rect)
-            alignedFace = face_aligner.align(532, image, face_rect,
-                                             landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
-
-            cv2.imwrite(f"../data/aligned_face_{i}.jpg", alignedFace)
-
-
-def menu_show(ls):
-    [print(f"{i}.{j}") for i, j in enumerate(ls)]
-    return input("Choose menu : ")
-
-
-dc_menu = ["Exit", #0
-                "/moviee/movies/faces", # 1. Load dataset
-                "/moviee/movies/fake-faces", # 2. Train and Show fake image
-                "/moviee/movies/face-zoom-in", # 3. Find face
-]
-dc_lambda = {
-    "1": lambda x: x.img_show(),
-    "2": lambda x: x.flow_dcgan(),
-    "3": lambda x: x.zoom_in(),
-}
-
-
-if __name__ == '__main__':
-    manualSeed = 999
-    print("Random Seed: ", manualSeed)
-    random.seed(manualSeed)
-    torch.manual_seed(manualSeed)
-
-    api = DcGan()
-    while True:
-        menu = menu_show(dc_menu)
-        if menu == '0':
-            print("Exit")
-            break
-        else:
-            try:
-                dc_lambda[menu](api)
-            except KeyError as e:
-                if 'Some error message' in str(e):
-                    print('Caught error message')
-                else:
-                    print("Didn't catch error message")
+#
+# import sys
+# import dlib
+# import cv2
+# import openface
+#
+#
+# class Mydlib(object):
+#     def __init__(self):
+#         pass
+#
+#     def zoom_in(self):
+#         predictor_model = "../files/shape_predictor_68_face_landmarks.dat"
+#
+#         face_detector = dlib.get_frontal_face_detector()
+#         face_pose_predictor = dlib.shape_predictor(predictor_model)
+#         face_aligner = openface.AlignDlib(predictor_model)
+#
+#         image = cv2.imread('../files/Lenna.png')
+#
+#         detected_faces = face_detector(image, 1)
+#         for i, face_rect in enumerate(detected_faces):
+#             print(
+#                 "- Face #{} found at Left: {} Top: {} Right: {} Bottom: {}".format(i, face_rect.left(), face_rect.top(),
+#                                                                                    face_rect.right(),
+#                                                                                    face_rect.bottom()))
+#
+#             pose_landmarks = face_pose_predictor(image, face_rect)
+#             alignedFace = face_aligner.align(532, image, face_rect,
+#                                              landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
+#
+#             cv2.imwrite(f"../data/aligned_face_{i}.jpg", alignedFace)
+#
+#
+# def menu_show(ls):
+#     [print(f"{i}.{j}") for i, j in enumerate(ls)]
+#     return input("Choose menu : ")
+#
+#
+# dc_menu = ["Exit", #0
+#                 "/moviee/movies/faces", # 1. Load dataset
+#                 "/moviee/movies/fake-faces", # 2. Train and Show fake image
+#                 "/moviee/movies/face-zoom-in", # 3. Find face
+# ]
+# dc_lambda = {
+#     "1": lambda x: x.img_show(),
+#     "2": lambda x: x.flow_dcgan(),
+#     "3": lambda x: x.zoom_in(),
+# }
+#
+#
+# if __name__ == '__main__':
+#     manualSeed = 999
+#     print("Random Seed: ", manualSeed)
+#     random.seed(manualSeed)
+#     torch.manual_seed(manualSeed)
+#
+#     api = DcGan()
+#     while True:
+#         menu = menu_show(dc_menu)
+#         if menu == '0':
+#             print("Exit")
+#             break
+#         else:
+#             try:
+#                 dc_lambda[menu](api)
+#             except KeyError as e:
+#                 if 'Some error message' in str(e):
+#                     print('Caught error message')
+#                 else:
+#                     print("Didn't catch error message")

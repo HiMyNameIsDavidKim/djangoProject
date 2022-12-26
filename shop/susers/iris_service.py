@@ -1,7 +1,7 @@
 import pandas as pd
+from tensorflow import keras
 from keras import Sequential
 from keras.layers import Dense
-from keras.saving.save import load_model
 from sklearn import datasets
 from sklearn.preprocessing import OneHotEncoder
 import tensorflow as tf
@@ -11,7 +11,7 @@ import numpy as np
 class IrisService(object):
     def __init__(self):
         global model, graph, target_names
-        model = load_model('/Users/davidkim/PycharmProjects/djangoProject/shop/susers/save/iris_model.h5')
+        model = keras.models.load_model('/Users/davidkim/PycharmProjects/djangoProject/shop/susers/save/iris_model.h5')
         # graph = tf.get_default_graph()
         target_names = datasets.load_iris().target_names
 
