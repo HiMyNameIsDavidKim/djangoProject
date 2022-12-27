@@ -10,8 +10,8 @@ from keras.saving.save import load_model
 class FruitServices(object):
     def __init__(self):
         global test_data_dir, train_data_dir, apple_name, batch_size, img_height, img_width, model_path
-        test_data_dir = f'/Users/davidkim/PycharmProjects/djangoProject/ml/fruits-360-5/Test'
-        train_data_dir = f'/Users/davidkim/PycharmProjects/djangoProject/ml/fruits-360-5/Training'
+        test_data_dir = f'/Users/davidkim/PycharmProjects/djangoProject/ml/data/fruits-360-5/Test'
+        train_data_dir = f'/Users/davidkim/PycharmProjects/djangoProject/ml/data/fruits-360-5/Training'
         apple_name = ['/Apple Braeburn', '/Apple Crimson Snow', '/Apple Golden 1', '/Apple Golden 2', '/Apple Golden 3']
         batch_size = 32
         img_height = 100

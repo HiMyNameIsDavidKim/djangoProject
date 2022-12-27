@@ -3,12 +3,12 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view, parser_classes
 from rest_framework.parsers import JSONParser
 
-from moviee.movies.services import DcGan
+# from moviee.movies.services import DcGan
 
 
 @api_view(['GET'])
 @parser_classes([JSONParser])
 def faces(request):
-    DcGan().flow_dcgan()
+    # DcGan().flow_dcgan()
     print(f'Enter Show Faces with {request}')
     return JsonResponse({'Response Test': 'SUCCESS'})

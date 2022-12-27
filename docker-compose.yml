@@ -2,23 +2,29 @@ version: "3"
 
 services:
   database:
-    image: mysql
-    container_name: david_mydb
+    platform: linux/amd64
+    image: mysql:5.7
+    container_name: mydb
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
     volumes:
-      - ~/docker/mysql/etc/mysql/conf.d:/etc/mysql/conf.d:ro
-      - ~/docker/mysql/var/lib/mysql:/var/lib/mysql
-      - ~/docker/mysql/var/log/mysql:/var/log/mysql
-      - /opt/mydb/mysql_data:/var/lib/mysql
-      - /tmp/mydb/mysqld:/var/run/mysqld
+      - ./data:/var/lib/mysql
+      - ./data:/var/run/mysqld
+#      - 윈도우
+#      - /opt/mydb/mysql_data:/var/lib/mysql
+#      - /tmp/mydb/mysqld:/var/run/mysqld
     environment:
       - MYSQL_DATABASE=mydb
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_ROOT_HOST=%
+    restart: always
     command: [ '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci' ]
-    ports:
-      - 3306:3306
+
   backend:
-    image: david_mydj:v1
+    platform: linux/amd64
+    image: django_david:1.0
     build: .
     container_name: david_mydj
     stdin_open: true
@@ -27,10 +33,12 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - .:/david_mydj
-      - /tmp/mydb/mysqld:/run/mysqld
+      - .:/django_scalar
+      - ./data:/run/mysqld
+#      - 윈도우 시 추가
+#      - /tmp/mydb/mysqld:/run/mysqld
     expose:
       - "8000"
     restart: always
     depends_on:
-      - database
+        - database
