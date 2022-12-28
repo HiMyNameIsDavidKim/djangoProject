@@ -59,6 +59,9 @@ class UserService(object):
                   con=engine,
                   index=False)
 
+    def get_users(self):
+        return f"포스트맨의 요청이 도달 했어요."
+
 
 if __name__ == '__main__':
     UserService().execute()
