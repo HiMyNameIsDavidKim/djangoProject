@@ -7,9 +7,9 @@ from rest_framework.parsers import JSONParser
 @parser_classes([JSONParser])
 def login(request):
     user_info = request.data
-    email = user_info['email']
+    username = user_info['username']
     password = user_info['password']
     print(f'Data from react {user_info}')
-    print(f'Email from react {email}')
+    print(f'Username from react {username}')
     print(f'Password from react {password}')
     return JsonResponse({'Response Test': 'SUCCESS'})
