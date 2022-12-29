@@ -8,6 +8,7 @@ import tensorflow as tf
 from shop.susers.fashion_service import FashionService
 from shop.susers.iris_service import IrisService
 from shop.susers.number_service import NumberService
+from shop.susers.webcrawler.services import ScrapService
 
 
 @api_view(['POST'])
@@ -64,3 +65,11 @@ def number(request):
         resp = 'Error'
     return JsonResponse({'result': resp})
 
+@api_view(['GET'])
+@parser_classes([JSONParser])
+def navermovie(request):
+    if request.method == 'GET':
+        return JsonResponse(
+            {'result': ScrapService().naver_movie_review()})
+    else:
+        print(f"######## ID is None ########")
