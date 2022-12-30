@@ -1,37 +1,56 @@
 import json
 from django.shortcuts import render
 from django.http import JsonResponse
+from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, parser_classes
 from rest_framework.parsers import JSONParser
 import tensorflow as tf
 from rest_framework.response import Response
 from users.models import Users
+from users.repositories import UserRepository
 from users.serializers import UserSerializer
 
 
 @api_view(["GET"])
 @parser_classes([JSONParser])
-def users(request):
-    if request.method == 'GET':
-        serializer = UserSerializer(Users.objects.all(), many=True)
-        return Response(serializer.data)
+def list(request): return UserRepository().users()
 
 
 @api_view(['POST'])
 @parser_classes([JSONParser])
-def login(request):
-    try:
-        print(f"로그인 정보: {request.data}")
-        loginInfo = request.data
-        loginUser = Users.objects.get(username=loginInfo['username'])
-        print(f"회원 ID: {loginUser.id}")
-        if loginUser.password == loginInfo["password"]:
-            dbUser = Users.objects.all().filter(id=loginUser.id).values()[0]
-            print(f'DB 정보: {dbUser}')
-            serializer = UserSerializer(loginUser, many=False)
-            return JsonResponse(data=serializer.data, safe=False)
-        else:
-            return Response("로그인 실패")
-    except:
-        return Response("로그인 실패")
+def login(request): return UserRepository().login(request.data)
+
+
+######
+@api_view(['POST', 'PUT', 'PATCH', 'DELETE', 'GET'])
+@parser_classes([JSONParser])
+def combo(request):
+    if request.method == "POST":
+        new_user = request.data
+        print(f'new user from react: {new_user}')
+        serializer = UserSerializer(data=new_user)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({"result": "success"})
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == "GET":
+        return Response(UserRepository().find_by_username(request.data['username']))
+
+    elif request.method == "PATCH":
+        return None
+
+    elif request.method == "PUT":
+        modify_user = UserRepository().find_by_username(request.data['username'])
+        db_user = UserRepository().find_by_id(modify_user.id)
+        serializer = UserSerializer(data=db_user)
+        if serializer.is_valid():
+            serializer.update(modify_user, db_user)
+            return Response(UserSerializer().update(db_user, request.data))
+
+    elif request.method == "DELETE":
+        delete_user = UserRepository().find_by_username(request.data['username'])
+        db_user = UserRepository().find_by_id(delete_user.id)
+        db_user.delete()
+        return JsonResponse({"result": "success"})
