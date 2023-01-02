@@ -36,7 +36,7 @@ def combo(request):
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == "GET":
-        return Response(UserRepository().find_by_username(request.data['username']))
+        return Response(UserRepository().find_by_username(request.data))
 
     elif request.method == "PATCH":
         return None
@@ -47,7 +47,7 @@ def combo(request):
         serializer = UserSerializer(data=db_user)
         if serializer.is_valid():
             serializer.update(modify_user, db_user)
-            return Response(UserSerializer().update(db_user, request.data))
+            return JsonResponse({"result": "SUCCESS"})
 
     elif request.method == "DELETE":
         delete_user = UserRepository().find_by_username(request.data['username'])

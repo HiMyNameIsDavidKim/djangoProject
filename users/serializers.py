@@ -7,7 +7,6 @@ class UserSerializer(serializers.ModelSerializer):
     created_at = serializers.CharField()
     rank = serializers.CharField()
     point = serializers.CharField()
-    token = serializers.CharField()
 
     class Meta:
         model = Users

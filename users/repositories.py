@@ -10,6 +10,9 @@ from users.models import Users
 from users.serializers import UserSerializer
 
 class UserRepository(object):
+    def __init__(self):
+        print(" UserRepository 객체 생성 ")
+
     def users(self):
         return Response(UserSerializer(Users.objects.all(), many=True).data)
 
@@ -31,5 +34,6 @@ class UserRepository(object):
     def find_by_id(self, id):
         return Users.objects.all().filter(id=id).values()[0]
 
-    def find_by_username(self, username):
-        return Users.objects.all().filter(username=username).values()[0]
+    def find_by_username(self, kwargs):
+        print(f'kwargs : {kwargs}')
+        return Users.objects.all().filter(username=kwargs['username']).values()[0]
