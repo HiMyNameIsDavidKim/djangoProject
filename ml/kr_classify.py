@@ -4,7 +4,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.naive_bayes import GaussianNB
 
 
-class KRClassifyModels(object):
+class KRClassifyServices(object):
     def __init__(self):
         pass
 
@@ -61,5 +61,5 @@ class KRClassifyModels(object):
 
 
 if __name__ == '__main__':
-    kr = KRClassifyModels()
+    kr = KRClassifyServices()
     kr.lang_classify()
