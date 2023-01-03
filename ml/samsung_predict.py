@@ -7,9 +7,17 @@ from keras.layers import Dense, LSTM, concatenate
 from keras.saving.save import load_model
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from abc import *
 
 
-class SamPredServices(object):
+class H5FileNames(object):
+    dnn_model = 'samsung_predict_dnn_sam.h5'
+    dnn_ensemble = 'samsung_predict_dnn_ensemble.h5'
+    lstm_model = 'samsung_predict_lstm_sam.h5'
+    lstm_ensemble = 'samsung_predict_lstm_ensemble.h5'
+
+
+class SamPredServices(metaclass=ABCMeta):
     def __init__(self):
         self.df1 = pd.read_csv('./data/kospi_data.csv', index_col=0, header=0, encoding='utf-8', sep=',')
         self.df2 = pd.read_csv('./data/samsung_data.csv', index_col=0, header=0, encoding='utf-8', sep=',')
