@@ -4,5 +4,5 @@ from users import views
 urlpatterns = [
     url(r'list', views.list),
     url(r'login', views.login),
-    url(r'combo', views.combo),
+    # url(r'combo', views.combo),
 ]
