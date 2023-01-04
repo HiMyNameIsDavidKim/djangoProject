@@ -1,3 +1,5 @@
+from enum import Enum
+
 import numpy as np
 import pandas as pd
 from keras import Input, Model
@@ -9,61 +11,66 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from abc import *
 
+class H5FileNames(Enum):
+    dnn_model = './save/samsung_predict_dnn_sam.h5'
+    dnn_ensemble = './save/samsung_predict_dnn_ensemble.h5'
+    lstm_model = './save/samsung_predict_lstm_sam.h5'
+    lstm_ensemble = './save/samsung_predict_lstm_ensemble.h5'
 
-class H5FileNames(object):
-    dnn_model = 'samsung_predict_dnn_sam.h5'
-    dnn_ensemble = 'samsung_predict_dnn_ensemble.h5'
-    lstm_model = 'samsung_predict_lstm_sam.h5'
-    lstm_ensemble = 'samsung_predict_lstm_ensemble.h5'
 
-
-class SamPredServices(metaclass=ABCMeta):
+class SamPredServices(object):
     def __init__(self):
+        global dnn_model, dnn_ensemble, lstm_model, lstm_ensemble
         self.df1 = pd.read_csv('./data/kospi_data.csv', index_col=0, header=0, encoding='utf-8', sep=',')
         self.df2 = pd.read_csv('./data/samsung_data.csv', index_col=0, header=0, encoding='utf-8', sep=',')
         self.kospi200 = None
         self.samsung = None
-        self.x = None
-        self.y = None
-        self.x_train_scaled = None
-        self.x_test_scaled = None
-        self.y_train = None
-        self.y_test = None
+        dnn_model = './save/samsung_predict_dnn_sam.h5'
+        dnn_ensemble = './save/samsung_predict_dnn_ensemble.h5'
+        lstm_model = './save/samsung_predict_lstm_sam.h5'
+        lstm_ensemble = './save/samsung_predict_lstm_ensemble.h5'
 
     def process(self):
         # self.df_modify()
         self.np_read()
+        self.process_dnn(fit_refresh=False)
+        self.process_lstm(fit_refresh=False)
+        self.process_dnn_ensemble(fit_refresh=False)
+        self.process_lstm_ensemble(fit_refresh=False)
 
-        ## DNN
-        # x, y = self.split_xy(self.samsung, 4, 1)
-        # x_train_scaled, x_test_scaled, y_train, y_test = self.dataset_dnn(x, y)
-        # self.modeling_dnn('sam', x_train_scaled, x_test_scaled, y_train, y_test)
-        # self.eval('dnn_sam', x_test_scaled, y_test)
+    def process_dnn(self, fit_refresh):
+        x, y = self.split_xy(self.samsung, 4, 1)
+        x_train_scaled, x_test_scaled, y_train, y_test = self.dataset_dnn(x, y)
+        if fit_refresh:
+            self.modeling_dnn(H5FileNames.dnn_model, x_train_scaled, x_test_scaled, y_train, y_test)
+        self.pred(H5FileNames.dnn_model, x_test_scaled, y_test)
 
-        ## LSTM
-        # x, y = self.split_xy(self.samsung, 4, 1)
-        # x_train_scaled, x_test_scaled, y_train, y_test = self.dataset_lstm(x, y)
-        # self.modeling_lstm('sam', x_train_scaled, x_test_scaled, y_train, y_test)
-        # self.eval('lstm_sam', x_test_scaled, y_test)
+    def process_lstm(self, fit_refresh):
+        x, y = self.split_xy(self.samsung, 4, 1)
+        x_train_scaled, x_test_scaled, y_train, y_test = self.dataset_lstm(x, y)
+        if fit_refresh:
+            self.modeling_lstm(H5FileNames.lstm_model, x_train_scaled, x_test_scaled, y_train, y_test)
+        self.pred(H5FileNames.lstm_model, x_test_scaled, y_test)
 
-        ## DNN ensemble
-        # x1, y1 = self.split_xy(self.samsung, 4, 1)
-        # x1_train_scaled, x1_test_scaled, y1_train, y1_test = self.dataset_dnn(x1, y1)
-        # x2, y2 = self.split_xy(self.kospi200, 4, 1)
-        # x2_train_scaled, x2_test_scaled, y2_train, y2_test = self.dataset_dnn(x2, y2)
-        # self.modeling_dnn_ensemble(x1_train_scaled, x2_train_scaled, y1_train,
-        #                            x1_test_scaled, x2_test_scaled, y1_test)
-        # self.eval('dnn_ensemble', [x1_test_scaled, x2_test_scaled], y1_test)
+    def process_dnn_ensemble(self, fit_refresh):
+        x1, y1 = self.split_xy(self.samsung, 4, 1)
+        x1_train_scaled, x1_test_scaled, y1_train, y1_test = self.dataset_dnn(x1, y1)
+        x2, y2 = self.split_xy(self.kospi200, 4, 1)
+        x2_train_scaled, x2_test_scaled, y2_train, y2_test = self.dataset_dnn(x2, y2)
+        if fit_refresh:
+            self.modeling_dnn_ensemble(x1_train_scaled, x2_train_scaled, y1_train,
+                                       x1_test_scaled, x2_test_scaled, y1_test)
+        self.pred(H5FileNames.dnn_ensemble, [x1_test_scaled, x2_test_scaled], y1_test)
 
-        ## LSTM ensemble
-        # x1, y1 = self.split_xy(self.samsung, 4, 1)
-        # x1_train_scaled, x1_test_scaled, y1_train, y1_test = self.dataset_lstm(x1, y1)
-        # x2, y2 = self.split_xy(self.samsung, 4, 1)
-        # x2_train_scaled, x2_test_scaled, y2_train, y2_test = self.dataset_lstm(x2, y2)
-        # self.modeling_lstm_ensemble(x1_train_scaled, x2_train_scaled, y1_train,
-        #                            x1_test_scaled, x2_test_scaled, y1_test)
-        # self.eval('lstm_ensemble', [x1_test_scaled, x2_test_scaled], y1_test)
-
+    def process_lstm_ensemble(self, fit_refresh):
+        x1, y1 = self.split_xy(self.samsung, 4, 1)
+        x1_train_scaled, x1_test_scaled, y1_train, y1_test = self.dataset_lstm(x1, y1)
+        x2, y2 = self.split_xy(self.samsung, 4, 1)
+        x2_train_scaled, x2_test_scaled, y2_train, y2_test = self.dataset_lstm(x2, y2)
+        if fit_refresh:
+            self.modeling_lstm_ensemble(x1_train_scaled, x2_train_scaled, y1_train,
+                                       x1_test_scaled, x2_test_scaled, y1_test)
+        self.pred(H5FileNames.lstm_ensemble, [x1_test_scaled, x2_test_scaled], y1_test)
 
     def df_modify(self):
         df1 = self.df1
@@ -74,22 +81,22 @@ class SamPredServices(metaclass=ABCMeta):
         df1 = df1.drop(['변동 %'], axis=1).dropna(axis=0)
         df2 = df2.drop(['변동 %'], axis=1).dropna(axis=0)
         for i in range(len(df1.index)):
-            if type(df2.iloc[i,4]) == float:
+            if type(df2.iloc[i, 4]) == float:
                 pass
-            if 'K' in df1.iloc[i,4]:
-                df1.iloc[i,4] = int(float(df1.iloc[i,4].replace('K', ''))*1000)
-            elif 'M' in df1.iloc[i,4]:
-                df1.iloc[i,4] = int(float(df1.iloc[i,4].replace('M', ''))*1000*1000)
+            if 'K' in df1.iloc[i, 4]:
+                df1.iloc[i, 4] = int(float(df1.iloc[i, 4].replace('K', '')) * 1000)
+            elif 'M' in df1.iloc[i, 4]:
+                df1.iloc[i, 4] = int(float(df1.iloc[i, 4].replace('M', '')) * 1000 * 1000)
         for i in range(len(df2.index)):
-            if type(df2.iloc[i,4]) == float:
+            if type(df2.iloc[i, 4]) == float:
                 pass
-            elif 'K' in df2.iloc[i,4]:
-                df2.iloc[i,4] = int(float(df2.iloc[i,4].replace('K', ''))*1000)
-            elif 'M' in df2.iloc[i,4]:
-                df2.iloc[i,4] = int(float(df2.iloc[i,4].replace('M', ''))*1000*1000)
+            elif 'K' in df2.iloc[i, 4]:
+                df2.iloc[i, 4] = int(float(df2.iloc[i, 4].replace('K', '')) * 1000)
+            elif 'M' in df2.iloc[i, 4]:
+                df2.iloc[i, 4] = int(float(df2.iloc[i, 4].replace('M', '')) * 1000 * 1000)
         for i in range(len(df2.index)):
-            for j in range(len(df2.iloc[i])-1):
-                df2.iloc[i,j] = int(df2.iloc[i,j].replace(',', ''))
+            for j in range(len(df2.iloc[i]) - 1):
+                df2.iloc[i, j] = int(df2.iloc[i, j].replace(',', ''))
         df1 = df1.sort_values(['날짜'], ascending=[True])
         df2 = df2.sort_values(['날짜'], ascending=[True])
         print(df1, df1.shape)
@@ -136,7 +143,7 @@ class SamPredServices(metaclass=ABCMeta):
 
     def modeling_dnn(self, name, x_train_scaled, x_test_scaled, y_train, y_test):
         model = Sequential()
-        model.add(Dense(64, input_shape=(20, )))
+        model.add(Dense(64, input_shape=(20,)))
         model.add(Dense(32, activation='relu'))
         model.add(Dense(32, activation='relu'))
         model.add(Dense(32, activation='relu'))
@@ -147,16 +154,16 @@ class SamPredServices(metaclass=ABCMeta):
         early_stopping = EarlyStopping(patience=20)
         model.fit(x_train_scaled, y_train, validation_split=0.2, verbose=1,
                   batch_size=1, epochs=100, callbacks=[early_stopping])
-        model.save('./save/samsung_predict_dnn_'+name+'.h5')
+        model.save(name)
 
         loss, mse = model.evaluate(x_test_scaled, y_test, batch_size=1)
         print('loss: ', loss)
         print('mse: ', mse)
 
-    def eval(self, arg, x_test_scaled, y_test):
-        model = load_model('./save/samsung_predict_'+arg+'.h5')
+    def pred(self, name, x_test_scaled, y_test):
+        model = load_model(name)
         y_pred = model.predict(x_test_scaled)
-        print(f'-----evaluate by {arg}-----')
+        print(f'-----evaluate by {name[23:]}-----')
         for i in range(5):
             print('close: ', y_test[i], ' / ', 'predict: ', y_pred[i])
 
@@ -187,7 +194,7 @@ class SamPredServices(metaclass=ABCMeta):
         early_stopping = EarlyStopping(patience=20)
         model.fit(x_train_scaled, y_train, validation_split=0.2, verbose=1,
                   batch_size=1, epochs=100, callbacks=[early_stopping])
-        model.save('./save/samsung_predict_lstm_'+name+'.h5')
+        model.save(name)
 
         loss, mse = model.evaluate(x_test_scaled, y_test, batch_size=1)
         print('loss: ', loss)
@@ -196,13 +203,13 @@ class SamPredServices(metaclass=ABCMeta):
     def modeling_dnn_ensemble(self,
                               x1_train_scaled, x2_train_scaled, y1_train,
                               x1_test_scaled, x2_test_scaled, y1_test):
-        input1 = Input(shape=(20, ))
+        input1 = Input(shape=(20,))
         dense1 = Dense(64)(input1)
         dense1 = Dense(32)(dense1)
         dense1 = Dense(32)(dense1)
         output1 = Dense(32)(dense1)
 
-        input2 = Input(shape=(20, ))
+        input2 = Input(shape=(20,))
         dense2 = Dense(64)(input2)
         dense2 = Dense(64)(dense2)
         dense2 = Dense(64)(dense2)
@@ -219,15 +226,15 @@ class SamPredServices(metaclass=ABCMeta):
         model.fit([x1_train_scaled, x2_train_scaled], y1_train,
                   validation_split=0.2, verbose=1, batch_size=1, epochs=100,
                   callbacks=[early_stopping])
-        model.save('./save/samsung_predict_dnn_' + 'ensemble' + '.h5')
+        model.save(H5FileNames.dnn_ensemble)
 
         loss, mse = model.evaluate([x1_test_scaled, x2_test_scaled], y1_test, batch_size=1)
         print('loss: ', loss)
         print('mse: ', mse)
 
     def modeling_lstm_ensemble(self,
-                              x1_train_scaled, x2_train_scaled, y1_train,
-                              x1_test_scaled, x2_test_scaled, y1_test):
+                               x1_train_scaled, x2_train_scaled, y1_train,
+                               x1_test_scaled, x2_test_scaled, y1_test):
         input1 = Input(shape=(4, 5))
         dense1 = LSTM(64)(input1)
         dense1 = Dense(32)(dense1)
@@ -251,7 +258,7 @@ class SamPredServices(metaclass=ABCMeta):
         model.fit([x1_train_scaled, x2_train_scaled], y1_train,
                   validation_split=0.2, verbose=1, batch_size=1, epochs=100,
                   callbacks=[early_stopping])
-        model.save('./save/samsung_predict_lstm_' + 'ensemble' + '.h5')
+        model.save(H5FileNames.lstm_ensemble)
 
         loss, mse = model.evaluate([x1_test_scaled, x2_test_scaled], y1_test, batch_size=1)
         print('loss: ', loss)
