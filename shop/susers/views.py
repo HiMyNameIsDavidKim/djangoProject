@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view, parser_classes
 from rest_framework.parsers import JSONParser
 import tensorflow as tf
 
+from ml.stock_predict import StockPredModels
 from shop.susers.fashion_service import FashionService
 from shop.susers.iris_service import IrisService
 from shop.susers.number_service import NumberService
@@ -73,3 +74,17 @@ def navermovie(request):
             {'result': ScrapService().naver_movie_review()})
     else:
         print(f"######## ID is None ########")
+
+@api_view(["GET"])
+@parser_classes([JSONParser])
+def stock(request):
+    resp = ''
+    if request.method == "GET":
+        print(f"### GET ###")
+        id = request.GET['id']
+        print(f"React ID is {id}.")
+        resp = StockPredModels().process()
+    else:
+        print(f"### Error ###")
+        resp = 'Error'
+    return JsonResponse({'result': resp})

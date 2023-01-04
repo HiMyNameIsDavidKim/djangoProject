@@ -5,5 +5,6 @@ urlpatterns = [
     url(r'iris', views.iris),
     url(r'fashion', views.fashion),
     url(r'number', views.number),
-    url(r'crawler', views.navermovie)
+    url(r'crawler', views.navermovie),
+    url(r'stock', views.stock),
 ]
